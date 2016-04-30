@@ -1,4 +1,4 @@
-from tkinter import *
+from Tkinter import *
 from processFrame import *
 
 def processWindow():
@@ -10,6 +10,7 @@ def pageFrame():
 
 def main():
 	root = Tk()
+	root.title("Program 4 - CSC456")
 
 	processButton = Button(root, text="Process Scheduler Algorithms", command=processWindow)
 	memoryButton = Button(root, text="Memory Management Algorithms", command=memoryFrame)

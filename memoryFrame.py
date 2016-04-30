@@ -1,4 +1,4 @@
-from tkinter import *
+from Tkinter import *
 
 class memoryFrame(Frame):
 	def __init__(self):
