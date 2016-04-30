@@ -2,7 +2,7 @@ from Tkinter import *
 import random
 import time
 
-waitTime = 3000
+waitTime = 500
 
 class memoryFrame(Frame):
 	def __init__(self):
@@ -11,6 +11,9 @@ class memoryFrame(Frame):
 		self.parent.geometry("900x700+100+100")
 		Frame.__init__(self, self.parent)
 		self.grid()
+		self.total = 0
+		self.TLBhits = 0
+		self.alpha = 0.0
 
 		self.initUI();
 		self.parent.mainloop()
@@ -71,6 +74,10 @@ class memoryFrame(Frame):
 		self.pageTable.config(height=self.numberOfPages.get())
 		self.grid_rowconfigure(5, minsize=300)
 		self.fillPageTable()
+		Label(self, text="Effective Access Time: ").grid(row=6, column = 0)
+		self.EAT = Entry(self)
+		self.EAT.grid(row = 6, column = 2)
+		self.grid_rowconfigure(6, minsize=40)
 
 		Label(self, text="Physical Memory:").grid(row=3, column=5, rowspan=10)
 		frameTableNumbers = Listbox(self, width=3, height = int(self.numberOfFrames.get()))
@@ -111,6 +118,9 @@ class memoryFrame(Frame):
 		for i in range(0, 5):
 			if self.TLBpages.get(i) == self.page:
 				self.TLBpages.itemconfig(i, bg = "green")
+				self.TLBhits = self.TLBhits + 1
+				self.total = self.total + 1
+				self.alpha = float(self.TLBhits) / self.total
 				inTLB = True
 				self.TLBpages.activate(i)
 				self.TLBframes.activate(i)
@@ -118,10 +128,15 @@ class memoryFrame(Frame):
 				self.parent.after(waitTime, self.updatePhysicalAddress)
 
 		if inTLB == False:
+			self.total = self.total + 1
+			self.alpha = float(self.TLBhits) / self.total
 			self.TLBpages.config(bg = "red")
 			for i in range(0, self.TLBpages.size()):
 				self.TLBpages.itemconfig(i, bg="red")
 			self.parent.after(waitTime, self.updatePageTable)
+
+		self.EAT.delete(0, END)
+		self.EAT.insert(0, str(round(self.alpha * 100 + (1 - self.alpha) * 200, 3)))
 
 	def updatePageTable(self):
 		self.pageTable.itemconfig(self.page, bg="green")
