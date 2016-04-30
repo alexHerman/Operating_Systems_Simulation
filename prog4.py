@@ -1,10 +1,11 @@
-from tkinter import *
+from Tkinter import *
 from processFrame import *
+from memoryFrame import *
 
 def processWindow():
 	processframe = processFrame()
-def memoryFrame():
-	print("Test")
+def memoryWindow():
+	memoryframe = memoryFrame()
 def pageFrame():
 	print("Test")
 
@@ -12,7 +13,7 @@ def main():
 	root = Tk()
 
 	processButton = Button(root, text="Process Scheduler Algorithms", command=processWindow)
-	memoryButton = Button(root, text="Memory Management Algorithms", command=memoryFrame)
+	memoryButton = Button(root, text="Memory Management Algorithms", command=memoryWindow)
 	pageButton = Button(root, text="Page Replacement Algorithms", command=pageFrame)
 
 	processButton.pack()
