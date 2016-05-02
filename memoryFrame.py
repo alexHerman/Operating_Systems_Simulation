@@ -1,6 +1,5 @@
 from Tkinter import *
 import random
-import time
 
 waitTime = 500
 
