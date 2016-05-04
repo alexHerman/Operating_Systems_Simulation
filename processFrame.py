@@ -97,7 +97,7 @@ class processFrame(Frame):
 		self.processListBox.delete(0, END)
 		for i in range(0, int(self.processCountBox.get())): #maybe check that there is actually a number here
 			self.processName.append("P" + str(i+1))
-			self.processBurstTime.append(int(random.randint(1,40)))
+			self.processBurstTime.append(int(random.randint(1,25)))
 			self.processPrioriy.append(int(random.randint(1,9)))
 			self.processArrival.append(int(i+1))
 			processLabel = self.processName[i] + ":  " + str(self.processBurstTime[i]).zfill(2) + "  " + str(self.processPrioriy[i]) + "  " + str(self.processArrival[i]).zfill(2)
@@ -106,42 +106,73 @@ class processFrame(Frame):
 	def checkBurstListForValues(self):
 		count = int(self.processCountBox.get())
 		for i in range(0, count):
-			if self.copyList[i] > 0:
+			if self.roundRobinBurstList[i] > 0:
 				return False
 		return True
 
-
-
+	def copyBurstList(self):
+		count = int(self.processCountBox.get())
+		for i in range(0, count):
+			self.roundRobinBurstList.append(self.processBurstTime[i])
 
 	def roundRobinGanttChart(self):
-		# remove other frame
+		print("starting round robin...")
 		self.setProcessesFrame()
-		print("Generating round robin...")
-		# build list for processes
-		count = int(self.processCountBox.get())
-		self.timeQuanta
+		# get time quanta
+		quanta = int(self.timeQuantaBox.get())
+		# make copy of burst time list
+		self.roundRobinBurstList = []
+		self.copyBurstList()
+		#print("roundRobinBurstList")
+		#print(self.roundRobinBurstList)
+		# build the round robin list
+		roundRobinBurstQueue = []
+		roundRobinNameQueue = []
+		quitLoop = self.checkBurstListForValues()
+		width = 0
+		row = 0
+		col = 0
+		totalSize = 0
+		counter = 0
 		processList = []
+		while quitLoop == False:
+			for i in range(0, int(self.processCountBox.get())):
+				print("BurstList[i] before:  "+str(self.roundRobinBurstList[i]))
+				if self.roundRobinBurstList[i] > 0:
+					leftOver = self.roundRobinBurstList[i] - quanta
+					if leftOver <= 0:
+						width = self.roundRobinBurstList[i]
+					else:
+						width = quanta
+					#totalSize = totalSize + width
 
-		self.generateProcessesList()
-		self.copyList = self.processBurstTime
-		hasListZero = self.checkBurstListForValues()
-		row = 0;
+					print("width:  " + str(width))
+					roundRobinNameQueue.append(self.processName[i])
+					print("Process name:  "+str(roundRobinNameQueue[i]))
+					self.roundRobinBurstList[i] = self.roundRobinBurstList[i] - quanta
+					print("Burst After:  " + str(self.roundRobinBurstList[i])+"\n")
 
-		while hasListZero == False:
-			for i in range(0, count):
-				Label(self.processDisplay, text=self.processName[i]).grid(row=row, column=i)
-				width = (550 / self.copyList[i]) * self.copyList[i]
-				can = Canvas(self.processDisplay, width=self.timeQuanta, height=50)
-				processList.append(can)
-				processList[i].create_rectangle(0, 0, self.timeQuanta, 50, fill="green")
-				processList[i].grid(row=row+1, column=i)
-				row = row + 1
-				hasListZero = self.checkBurstListForValues()
+					# display shapes and calculate size
+					Label(self.processDisplay, text=roundRobinNameQueue[i]).grid(row=row, column=col)
+					shapeCan = Canvas(self.processDisplay, width=width+1, height=50)
+					#processList.append(shapeCan)
+					shapeCan.create_rectangle(0, 0, width+1, 50, fill="green")
+					shapeCan.grid(row=row+1, column=col)
+					# update row and column
+					if col > 25:
+						col = 0
+						row = row + 2
+					else:
+						col = col + 1
 
-
+			quitLoop = self.checkBurstListForValues()
+			print("----------------------------------------------------------")
+		print("name queue")
+		print(roundRobinNameQueue)
 
 
 	def priorityGanttChart(self):
+		print("priority...")
 		# remove other frame
 		self.setProcessesFrame()
 		count = int(self.processCountBox.get())
@@ -149,6 +180,7 @@ class processFrame(Frame):
 		self.sortProcessesByPriority()
 		self.addBurstTimes()
 		processList = []
+		print("burst: " + str(self.processBurstTime))
 		for i in range(0, count):
 			Label(self.processDisplay, text=self.processName[i]).grid(row=0, column=i)
 			width = (550 / self.burstTimeTotal) * self.processBurstTime[i]
@@ -158,6 +190,7 @@ class processFrame(Frame):
 			processList[i].grid(row=1, column=i, sticky=W)
 
 	def FCFSGanttChart(self):
+		print("FCFS...")
 		# remove other frame
 		self.setProcessesFrame()
 		count = int(self.processCountBox.get())
@@ -165,6 +198,7 @@ class processFrame(Frame):
 		self.sortProcessesByArrivalTime()
 		self.addBurstTimes()
 		processList = []
+		print("burst: " + str(self.processBurstTime))
 		for i in range(0, count):
 			Label(self.processDisplay, text=self.processName[i]).grid(row=0, column=i)
 			width = (550 / self.burstTimeTotal) * self.processBurstTime[i]
@@ -174,12 +208,14 @@ class processFrame(Frame):
 			processList[i].grid(row=1, column=i, sticky=W)
 
 	def SJFGanttChart(self):
+		print("SJF...")
 		# remove old frame
 		self.setProcessesFrame()
 		count = int(self.processCountBox.get())
 		self.sortProcessesByBurstTime()
 		self.addBurstTimes()
 		processList = []
+		print("burst: " + str(self.processBurstTime))
 		for i in range(0, count):
 			Label(self.processDisplay, text=self.processName[i]).grid(row=0, column=i)
 			width = (550 / self.burstTimeTotal) * self.processBurstTime[i]
@@ -252,7 +288,6 @@ class processFrame(Frame):
 		self.roundRobinButton = Radiobutton(self.frameRadioButtons, command=self.clearProcessFrame, text="Round Robin", variable=self.selectedMethod, value=0)
 		self.roundRobinButton.grid(sticky=N, row=0, column=0)
 
-
 		# set up shortest job first button
 		self.shortestJobFirstButton = Radiobutton(self.frameRadioButtons, command=self.clearProcessFrame, text="Shortest Job First", variable=self.selectedMethod, value=2)
 		self.shortestJobFirstButton.grid(sticky=N, row=0, column=1)
@@ -275,7 +310,7 @@ class processFrame(Frame):
 
 		# label and entry for the time quanta - only for round robin
 		self.timeQuanta = StringVar()
-		Label(self.frameRadioButtons, text="Time Quanta (Round Robin only): ").grid(row=1, column=0)
+		Label(self.frameRadioButtons, text="Time Quanta (RR only): ").grid(row=1, column=0)
 		self.timeQuantaBox = Entry(self.frameRadioButtons)
 		self.timeQuantaBox.grid(row=1, column=1)
 
