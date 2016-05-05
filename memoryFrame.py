@@ -21,14 +21,19 @@ class memoryFrame(Frame):
 		print(self.timeQuantaBox.get())
 
 	def initUI(self):
-		Label(self, text="Number of Frames: ").grid(row = 0, column =  0)
-		self.numberOfFrames = Entry(self)
-		self.numberOfFrames.grid(row = 0, column = 2)
-		Label(self, text="Number of Pages: ").grid(row = 0, column =  3)
-		self.numberOfPages = Entry(self)
-		self.numberOfPages.grid(row = 0, column = 4)
-		self.startButton = Button(self, text="Start", command=self.initMMU)
-		self.startButton.grid(row = 0, column=5)
+		self.inputFrame = Frame(self)
+		self.inputFrame.grid(row=0, column=0, columnspan=100, sticky=W)
+		Label(self.inputFrame, text="Number of Frames: ").grid(row = 0, column =  0)
+		self.numberOfFrames = Entry(self.inputFrame)
+		self.numberOfFrames.grid(row = 0, column = 1)
+		Label(self.inputFrame, text="Number of Pages: ").grid(row = 0, column =  2)
+		self.numberOfPages = Entry(self.inputFrame)
+		self.numberOfPages.grid(row = 0, column = 3)
+		Label(self.inputFrame, text="TLB Size: ").grid(row = 0, column =  4)
+		self.TLBSize = Entry(self.inputFrame)
+		self.TLBSize.grid(row = 0, column = 5)
+		self.startButton = Button(self.inputFrame, text="Start", command=self.initMMU)
+		self.startButton.grid(row = 0, column=6)
 
 	def initMMU(self):
 		self.startButton.grid_remove()
@@ -46,19 +51,19 @@ class memoryFrame(Frame):
 
 		# TLB
 		Label(self, text="TLB:").grid(row = 4, column = 0)
-		TLBTableNumbers = Listbox(self, width=3, height = 5)
-		for i in range(0, 5):
+		TLBTableNumbers = Listbox(self, width=3, height = int(self.TLBSize.get()))
+		for i in range(0, int(self.TLBSize.get())):
 			TLBTableNumbers.insert(END, i)
 		TLBTableNumbers.grid(row = 4, column=1)
 		TLBTableNumbers.config(bg = "gray93", border = 0)
 		Label(self, text="Page").grid(row = 3, column = 2)
 		self.TLBpages = Listbox(self)
 		self.TLBpages.grid(row = 4, column = 2)
-		self.TLBpages.config(height=5)
+		self.TLBpages.config(height=int(self.TLBSize.get()))
 		Label(self, text="Frame").grid(row = 3, column = 3)
 		self.TLBframes = Listbox(self)
 		self.TLBframes.grid(row = 4, column = 3)
-		self.TLBframes.config(height=5)
+		self.TLBframes.config(height=int(self.TLBSize.get()))
 		self.grid_rowconfigure(2, minsize=50)
 
 		# Page Table
@@ -114,7 +119,7 @@ class memoryFrame(Frame):
 
 	def updateTLB(self):
 		inTLB = False
-		for i in range(0, 5):
+		for i in range(0, int(self.TLBSize.get())):
 			if self.TLBpages.get(i) == self.page:
 				self.TLBpages.itemconfig(i, bg = "green")
 				self.TLBhits = self.TLBhits + 1
@@ -140,7 +145,7 @@ class memoryFrame(Frame):
 	def updatePageTable(self):
 		self.pageTable.itemconfig(self.page, bg="green")
 		self.frame = self.pageTable.get(self.page)
-		if self.TLBpages.size() == 5:
+		if self.TLBpages.size() == int(self.TLBSize.get()):
 			self.TLBpages.delete(END)
 			self.TLBframes.delete(END)
 		self.TLBpages.insert(0, self.page)
