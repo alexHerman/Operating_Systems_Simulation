@@ -128,6 +128,7 @@ class processFrame(Frame):
 		self.processBurstTime = []
 		self.processPrioriy = []
 		self.processArrival = []
+		spcr = "     "
 		#remove all elelments in the list
 		self.processListBox.delete(0, END)
 		for i in range(0, int(self.processCountBox.get())): #maybe check that there is actually a number here
@@ -135,7 +136,7 @@ class processFrame(Frame):
 			self.processBurstTime.append(int(random.randint(1,25)))
 			self.processPrioriy.append(int(random.randint(1,9)))
 			self.processArrival.append(int(i+1))
-			processLabel = self.processName[i] + ":  " + str(self.processBurstTime[i]).zfill(2) + "  " + str(self.processPrioriy[i]) + "  " + str(self.processArrival[i]).zfill(2)
+			processLabel = self.processName[i] + ":"+ spcr + str(self.processBurstTime[i]).zfill(2) + spcr + str(self.processPrioriy[i]) + spcr + str(self.processArrival[i]).zfill(2)
 			self.processListBox.insert(END, processLabel)
 	############################# END OF FUNCTION #############################
 
@@ -204,21 +205,24 @@ class processFrame(Frame):
 					roundRobinNameQueue.append(self.processName[i])
 					self.roundRobinBurstList[i] = self.roundRobinBurstList[i] - quanta
 					# display shapes and calculate size
-					Label(self.processDisplay, text=roundRobinNameQueue[i]).grid(row=row, column=col)
-					shapeCan = Canvas(self.processDisplay, width=width+1, height=50)
+					Label(self.processDisplay, text=roundRobinNameQueue[i]).grid(row=row, column=col+1)
+					shapeCan = Canvas(self.processDisplay, width=width+1, height=40)
 					shapeCan.create_rectangle(0, 0, width+1, 50, fill="green")
-					shapeCan.grid(row=row+1, column=col)
-					# update row and column
-					if col > 25:
-						col = 0
-						row = row + 2
-					else:
-						col = col + 1
-
+					shapeCan.grid(row=row+1, column=col+1)
 					# display the label for burst time
-					#Label(self.processDisplay, text=str(totalTime)).grid(row=row+2, column=col)
+					Label(self.processDisplay, text=str(totalTime)).grid(row=row+2, column=col)
+					totalTime = totalTime + width
+
+					# update row and column
+					if col > 20:
+						col = 0
+						row = row + 3
+					else:
+						col = col + 2
+
 
 			quitLoop = self.checkBurstListForValues()
+		Label(self.processDisplay, text=str(totalTime)).grid(row=row+2, column=col)
 	############################# END OF FUNCTION #############################
 
 	###########################################################################
@@ -395,6 +399,9 @@ class processFrame(Frame):
 	#  the various elements of the process scheduling UI
 	###########################################################################
 	def initUI(self):
+		# var for padding width
+		padWidth = 7
+
 		# FRAME FOR PROCESS LIST ON THE LEFT SIDE OF THE WINDOW
 		# set up left side column for processes
 		self.processListColumnFrame = Frame(self, width=200, height=400, background="grey")
@@ -403,19 +410,19 @@ class processFrame(Frame):
 
 		# process list
 		# show label and entry box for process count
-		Label(self.processListColumnFrame, text="Enter process count: ").grid(row=0, column=0, sticky=W)
+		Label(self.processListColumnFrame, text="Enter process count: ", background="grey").grid(row=0, column=0, sticky=W, padx=padWidth)
 		self.processCountBox = Entry(self.processListColumnFrame)
-		self.processCountBox.grid(row=1, column=0, sticky=W)
+		self.processCountBox.grid(row=1, column=0, sticky=W, padx=padWidth)
 
 		# show button for generating process list
-		Button(self.processListColumnFrame, text="Generate Process List", command=self.generateProcessesList).grid(row=2, column=0, sticky=W)
+		Button(self.processListColumnFrame, text="Generate Process List", command=self.generateProcessesList).grid(row=2, column=0, pady=10, sticky=W, padx=padWidth)
 
 		# show label for list box
-		Label(self.processListColumnFrame, text="P, Burst t, Priority t, Arrival t").grid(row=3, column=0, sticky=W)
+		Label(self.processListColumnFrame, text="Px, Burst t, Priority t, Arrival t", background="grey").grid(row=3, column=0, sticky=W, padx=padWidth)
 
 		# show list box for showing the processes
-		self.processListBox = Listbox(self.processListColumnFrame)
-		self.processListBox.grid(row=4, column=0, sticky=W)
+		self.processListBox = Listbox(self.processListColumnFrame, height=17, width=22)
+		self.processListBox.grid(row=4, column=0, sticky=W, padx=padWidth)
 
 		# END PROCESS COLUMN SUTFF
 
@@ -423,13 +430,13 @@ class processFrame(Frame):
 		# set up frame for rght side for buttons and process rectangles
 		self.dataColumnFrame = Frame(self, width=600, height=400)
 		self.dataColumnFrame.grid_propagate(False);
-		self.dataColumnFrame.grid(row=0, column=1)
+		self.dataColumnFrame.grid(row=0, column=1, padx=10)
 
 		# FRAME INSIDE OF THE DISPLAY FRAME
 		# set up frame for radio buttons and text entry
 		self.frameRadioButtons = Frame(self.dataColumnFrame, width=600, height=75)
 		self.frameRadioButtons.grid_propagate(False);
-		self.frameRadioButtons.grid(sticky=W,row=0, column=0)
+		self.frameRadioButtons.grid(sticky=W,row=0, column=0, pady=10)
 
 		# variable for getting a number based on radio button choosen
 		self.selectedMethod = IntVar(master=self.parent)
