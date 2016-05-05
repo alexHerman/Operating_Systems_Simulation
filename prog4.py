@@ -14,9 +14,9 @@ def main():
 	root = Tk()
 	root.title("Program 4 - CSC456")
 
-	processButton = Button(root, text="Process Scheduler Algorithms", command=processWindow)
-	memoryButton = Button(root, text="Memory Management Algorithms", command=memoryWindow)
-	pageButton = Button(root, text="Page Replacement Algorithms", command=pageWindow)
+	processButton = Button(root, text="Process Scheduler Algorithms", command=processWindow, padx=20, pady=20)
+	memoryButton = Button(root, text="Memory Management Algorithms", command=memoryWindow, padx=20, pady=20)
+	pageButton = Button(root, text="Page Replacement Algorithms", command=pageWindow, padx=20, pady=20)
 
 	processButton.pack()
 	memoryButton.pack()
