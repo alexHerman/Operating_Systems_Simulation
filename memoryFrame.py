@@ -1,7 +1,7 @@
 from Tkinter import *
 import random
 
-waitTime = 500
+waitTime = 5000
 
 class memoryFrame(Frame):
 	def __init__(self):
@@ -107,7 +107,7 @@ class memoryFrame(Frame):
 		self.fillFrameTable()
 		self.animate();
 
-	
+	#Randomly generates the page table
 	def fillPageTable(self):
 		for i in range(0, int(self.numberOfPages.get())):
 			frame = random.randrange(0, int(self.numberOfFrames.get()))
@@ -115,10 +115,12 @@ class memoryFrame(Frame):
 				frame = random.randrange(0, int(self.numberOfFrames.get()))
 			self.pageTable.insert(0, frame)
 
+	#Assigns labels to each frame in RAM
 	def fillFrameTable(self):
 		for i in range(0, int(self.numberOfFrames.get())):
 			self.RAM.insert(END, "Frame " + str(i))
 
+	#Begins animating the diagram. Starts by creating a logical address
 	def animate(self):
 		self.resetTables()
 		self.page = random.randrange(0, int(self.numberOfPages.get()))
@@ -129,6 +131,7 @@ class memoryFrame(Frame):
 		self.addressOffset.insert(0, str(self.offset))
 		self.parent.after(waitTime, self.updateTLB)
 
+	#Checks if the page is in the TLB and if it is not, goes to the page table
 	def updateTLB(self):
 		inTLB = False
 		for i in range(0, int(self.TLBSize.get())):
@@ -154,6 +157,7 @@ class memoryFrame(Frame):
 		self.EAT.delete(0, END)
 		self.EAT.insert(0, str(round(self.alpha * 100 + (1 - self.alpha) * 200, 3)))
 
+	#Called if a page was not in the TLB, finds the page in the page table and updates the TLB
 	def updatePageTable(self):
 		self.pageTable.itemconfig(self.page, bg="green")
 		self.frame = self.pageTable.get(self.page)
@@ -164,6 +168,7 @@ class memoryFrame(Frame):
 		self.TLBframes.insert(0, self.pageTable.get(self.page))
 		self.parent.after(waitTime, self.updatePhysicalAddress)
 
+	#Updates the text boxes that display the physical address
 	def updatePhysicalAddress(self):
 		self.physicalAddressPage.delete(0, END)
 		self.physicalAddressPage.insert(0, str(self.frame))
@@ -171,10 +176,12 @@ class memoryFrame(Frame):
 		self.physicalAddressOffset.insert(0, str(self.addressOffset.get()))
 		self.parent.after(waitTime, self.updateRAM)
 
+	#Highlights the correct frame in RAM
 	def updateRAM(self):
 		self.RAM.itemconfig(self.frame, bg="green")
 		self.parent.after(waitTime, self.animate)
 
+	#Resets the colors on each of the tables
 	def resetTables(self):
 		for i in range(0, int(self.numberOfPages.get())):
 			self.pageTable.itemconfig(i, bg="white")
