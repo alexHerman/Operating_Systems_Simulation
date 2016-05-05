@@ -23,20 +23,30 @@ class memoryFrame(Frame):
 	def initUI(self):
 		self.inputFrame = Frame(self)
 		self.inputFrame.grid(row=0, column=0, columnspan=100, sticky=W)
+
+		#Number of frames text box
 		Label(self.inputFrame, text="Number of Frames: ").grid(row = 0, column =  0)
 		self.numberOfFrames = Entry(self.inputFrame)
 		self.numberOfFrames.grid(row = 0, column = 1)
+
+		#Number of pages text box
 		Label(self.inputFrame, text="Number of Pages: ").grid(row = 0, column =  2)
 		self.numberOfPages = Entry(self.inputFrame)
 		self.numberOfPages.grid(row = 0, column = 3)
+
+		#TLB size text box
 		Label(self.inputFrame, text="TLB Size: ").grid(row = 0, column =  4)
 		self.TLBSize = Entry(self.inputFrame)
 		self.TLBSize.grid(row = 0, column = 5)
+
+		#Start button
 		self.startButton = Button(self.inputFrame, text="Start", command=self.initMMU)
 		self.startButton.grid(row = 0, column=6)
 
+	#Initializes the memory management GUI componenets
 	def initMMU(self):
 		self.startButton.grid_remove()
+		#Create a text box for the logical address
 		Label(self, text="Logical Address: ").grid(row = 1, column = 0, sticky=S)
 		self.addressPage = Entry(self)
 		self.addressPage.grid(row = 1, column = 2, sticky=S)
@@ -83,6 +93,7 @@ class memoryFrame(Frame):
 		self.EAT.grid(row = 6, column = 2)
 		self.grid_rowconfigure(6, minsize=40)
 
+		#RAM table
 		Label(self, text="Physical Memory:").grid(row=3, column=5, rowspan=10)
 		frameTableNumbers = Listbox(self, width=3, height = int(self.numberOfFrames.get()))
 		for i in range(0, int(self.numberOfFrames.get())):
@@ -96,6 +107,7 @@ class memoryFrame(Frame):
 		self.fillFrameTable()
 		self.animate();
 
+	
 	def fillPageTable(self):
 		for i in range(0, int(self.numberOfPages.get())):
 			frame = random.randrange(0, int(self.numberOfFrames.get()))
